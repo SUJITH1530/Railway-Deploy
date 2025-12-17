@@ -52,14 +52,15 @@ class YoloDetector:
                 # OpenCV versions differ
                 self.output_layer_names = [ln[i - 1] for i in self.net.getUnconnectedOutLayers()]
         except Exception:
-            # fallback to Haar cascade for cars if present
-            try:
-                self.haar = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_car.xml')
-                if self.haar.empty():
+            # fallback to Haar cascade for cars if present and bundled
+            haar_path = os.path.join(cv2.data.haarcascades, 'haarcascade_car.xml') if hasattr(cv2, 'data') else ''
+            if haar_path and os.path.exists(haar_path):
+                try:
+                    self.haar = cv2.CascadeClassifier(haar_path)
+                    self.use_haar = not self.haar.empty()
+                except Exception:
                     self.use_haar = False
-                else:
-                    self.use_haar = True
-            except Exception:
+            else:
                 self.use_haar = False
 
     def detect(self, frame):

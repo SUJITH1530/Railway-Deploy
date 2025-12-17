@@ -146,11 +146,17 @@ def upload_multi():
 
 
 def start_detector_and_gpio():
-    # detector source can be set with VIDEO_SOURCE env var
-    source = os.environ.get('VIDEO_SOURCE', '0')
+    # detector source can be set with VIDEO_SOURCE env var; skip if none
+    source = os.environ.get('VIDEO_SOURCE', 'none')
     model_dir = os.environ.get('MODEL_DIR', 'models')
-    detector = DetectorThread(shared_state, source=source, model_dir=model_dir)
-    detector.start()
+    disable_detector = os.environ.get('DISABLE_DETECTOR', '').lower() in ('1', 'true', 'yes')
+
+    detector = None
+    if not disable_detector and str(source).lower() not in ('', 'none', 'off'):
+        detector = DetectorThread(shared_state, source=source, model_dir=model_dir)
+        detector.start()
+    else:
+        print("Detector disabled (no camera/video source provided)")
 
     # Start a simple thread to control GPIO lights according to green_time
     gpio = GPIOController()
@@ -183,5 +189,6 @@ if __name__ == "__main__":
     try:
         app.run(debug=False, host="0.0.0.0", port=port)
     finally:
-        detector.stop()
+        if detector:
+            detector.stop()
         gpio.cleanup()
