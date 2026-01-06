@@ -582,8 +582,14 @@ startBtn.addEventListener('click', async () => {
     }
 });
 
-browseBtn.addEventListener('click', () => fileInput.click());
-multiBtn.addEventListener('click', () => multiInput.click());
+browseBtn.addEventListener('click', () => {
+    console.log('Browse button clicked, fileInput:', fileInput);
+    if (fileInput) fileInput.click();
+});
+multiBtn.addEventListener('click', () => {
+    console.log('Multi button clicked, multiInput:', multiInput);
+    if (multiInput) multiInput.click();
+});
 drop.addEventListener('dragover', (e) => { e.preventDefault(); drop.classList.add('hover'); });
 drop.addEventListener('dragleave', () => drop.classList.remove('hover'));
 drop.addEventListener('drop', (e) => {
@@ -614,8 +620,13 @@ stopCamBtn.addEventListener('click', () => {
 });
 
 fileInput.addEventListener('change', async (e) => {
+    console.log('File input changed:', e.target.files);
     const f = e.target.files[0];
-    if (!f) return;
+    if (!f) {
+        console.warn('No file selected');
+        return;
+    }
+    console.log('Uploading file:', f.name);
     uploadFile(f);
 });
 
