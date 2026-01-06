@@ -684,11 +684,16 @@ async function uploadBase64(dataUrl) {
 
 multiInput.addEventListener('change', async (e) => {
     try {
+        console.log('Multi-upload triggered');
         const files = Array.from(e.target.files || []);
         if (files.length === 0) return;
+        console.log(`Uploading ${files.length} files to lanes`);
         const form = new FormData();
         ['lane1','lane2','lane3','lane4'].forEach((lane, idx) => {
-            if (files[idx]) form.append(lane, files[idx]);
+            if (files[idx]) {
+                form.append(lane, files[idx]);
+                console.log(`Added ${files[idx].name} to ${lane}`);
+            }
         });
         const res = await fetch('/upload-multi', { method: 'POST', body: form });
         if (!res.ok) {
@@ -698,11 +703,31 @@ multiInput.addEventListener('change', async (e) => {
             return;
         }
         const data = await res.json();
+        console.log('Multi-upload response:', data);
+        
+        // Update server lanes data
         if (data && data.lanes) applyServerLanes(data.lanes);
-        const first = Object.values(data.results || {})[0];
-        if (first && first.processed_image) {
-            processedImg.style.display = 'block';
-            processedImg.src = first.processed_image;
+        
+        // Update preview images with processed images
+        if (data.results) {
+            Object.entries(data.results).forEach(([lane, result]) => {
+                console.log(`Setting ${lane} image to`, result.processed_image);
+                if (previewImgs[lane]) {
+                    previewImgs[lane].src = result.processed_image;
+                }
+                // Also update the main result display
+                if (laneCounts) laneCounts[lane] = result.vehicles || 0;
+            });
+            // Show main result image from first lane with results
+            const first = Object.values(data.results || {})[0];
+            if (first && first.processed_image) {
+                console.log('Displaying first result image:', first.processed_image);
+                processedImg.style.display = 'block';
+                processedImg.src = first.processed_image;
+                setTimeout(() => {
+                    processedImg.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 100);
+            }
         }
     } catch (err) {
         console.error('Multi-upload error:', err);
