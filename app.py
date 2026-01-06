@@ -122,7 +122,15 @@ def _update_lane(lane: str, count: int, processed_name: str | None, has_emergenc
 
 @app.route('/data')
 def data():
-    return jsonify(shared_state)
+    # Convert deques to lists for JSON serialization
+    data_to_send = dict(shared_state)
+    for lane_key in ['lane1', 'lane2', 'lane3', 'lane4']:
+        if lane_key in data_to_send['lanes']:
+            lane_data = dict(data_to_send['lanes'][lane_key])
+            if 'traffic_history' in lane_data:
+                lane_data['traffic_history'] = list(lane_data['traffic_history'])
+            data_to_send['lanes'][lane_key] = lane_data
+    return jsonify(data_to_send)
 
 
 @app.route('/')
