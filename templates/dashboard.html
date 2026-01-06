@@ -724,6 +724,21 @@ function showResults(data) {
     console.log('Displaying processed image:', data.processed_image);
     processedImg.style.display = 'block';
     processedImg.src = data.processed_image;
+    
+    // Scroll to show the result
+    setTimeout(() => {
+        processedImg.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+    
+    // Add error handler to see if image fails to load
+    processedImg.onerror = function() {
+        console.error('⚠️ Image failed to load:', data.processed_image);
+        alert('Image failed to load: ' + data.processed_image);
+    };
+    processedImg.onload = function() {
+        console.log('✅ Image loaded successfully');
+    };
+    
     laneLabel.style.display = 'block';
     const lane = laneSelect.value;
     laneCounts[lane] = data.vehicles || 0;
