@@ -3,11 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    <title>Live Traffic Dashboard v3.0</title>
-    <link rel="stylesheet" href="/static/style.css?v=3.0">
+    <title>Live Traffic Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
 
@@ -28,7 +25,7 @@
         <h3>Upload lane images</h3>
         <div id="drop" class="upload-box">
             <span>Drag and drop files here</span>
-            <label for="fileInput" id="browseLabel" style="cursor:pointer; padding:10px 16px; background:#2563eb; color:white; border-radius:8px;">Browse files</label>
+            <button id="browseBtn" type="button">Browse files</button>
             <input id="fileInput" type="file" accept="image/*" style="display:none">
         </div>
         <div style="margin-top:10px">
@@ -47,61 +44,10 @@
                 </select>
             </div>
             <div style="margin-top:8px">
-                <label for="multiInput" id="multiBtn" style="cursor:pointer; padding:10px 16px; background:#2563eb; color:white; border-radius:8px; display:inline-block;">Upload 4 Lanes</label>
+                <button id="multiBtn" type="button">Upload 4 Lanes</button>
                 <input id="multiInput" type="file" multiple accept="image/*" style="display:none">
                 <small style="margin-left:8px; opacity:0.8;">Select up to 4 images (order maps to Lane1..4)</small>
             </div>
-        </div>
-    </div>
-
-    <div class="card" style="max-width:900px; width:95%; text-align:left;">
-        <h3>🚨 Emergency Vehicle Detection & Priority Control</h3>
-        <div id="emergencyAlert" style="display:none; background:#ef4444; color:white; padding:12px; border-radius:6px; font-weight:bold; margin-bottom:10px;">
-            🚨 EMERGENCY VEHICLE DETECTED IN <span id="emergencyLane">LANE</span>
-            <br/>
-            <span id="emergencyVehicleCount">0</span> Emergency vehicle(s) detected
-            <br/>
-            🟢 <span id="emergencyLaneName">Lane X</span> → GREEN (PRIORITY MODE)
-            <br/>
-            🔴 All other lanes → RED
-            <br/>
-            ⏱ GREEN until emergency vehicle fully clears junction
-        </div>
-        <p id="emergencyStatus" style="opacity:0.8; margin-bottom:10px;">No emergency vehicles detected. System in normal mode.</p>
-        <div style="display:flex; gap:10px; flex-wrap:wrap;">
-            <button id="clearEmergencyBtn" style="background:#10b981; display:none;">✓ Clear Emergency (Manual Override)</button>
-        </div>
-    </div>
-
-    <div class="card" style="max-width:900px; width:95%; text-align:left; background:#fef3c7; border-left:4px solid #f59e0b;">
-        <h3 style="color:#92400e;">🚔 Manual Emergency Control (Traffic Police Override)</h3>
-        <p style="opacity:0.9; margin-bottom:12px; color:#92400e;">Use this for manual emergency vehicle priority when AI detection fails. This has the <b>HIGHEST priority</b> over automatic detection.</p>
-        
-        <div style="margin-bottom:12px;">
-            <label style="font-weight:bold; color:#92400e;">Select Lane for Emergency:</label>
-            <div style="margin-top:8px; display:flex; gap:15px; flex-wrap:wrap;">
-                <label style="display:flex; align-items:center; gap:6px; color:#92400e;">
-                    <input type="radio" name="manualLane" value="lane1" id="radio_lane1"> Lane 1
-                </label>
-                <label style="display:flex; align-items:center; gap:6px; color:#92400e;">
-                    <input type="radio" name="manualLane" value="lane2" id="radio_lane2"> Lane 2
-                </label>
-                <label style="display:flex; align-items:center; gap:6px; color:#92400e;">
-                    <input type="radio" name="manualLane" value="lane3" id="radio_lane3"> Lane 3
-                </label>
-                <label style="display:flex; align-items:center; gap:6px; color:#92400e;">
-                    <input type="radio" name="manualLane" value="lane4" id="radio_lane4"> Lane 4
-                </label>
-            </div>
-        </div>
-        
-        <div id="manualEmergencyStatus" style="margin-bottom:12px; padding:10px; background:white; border-radius:4px; color:#92400e; display:none; font-weight:bold;">
-            🚨 Manual Emergency Active: <span id="manualActiveLane">Lane X</span> is GREEN (no timer until cleared)
-        </div>
-        
-        <div style="display:flex; gap:8px; flex-wrap:wrap;">
-            <button id="activateManualBtn" style="background:#f59e0b; color:white; font-weight:bold;">🚨 Activate Manual Emergency</button>
-            <button id="clearManualBtn" style="background:#10b981; color:white; font-weight:bold; display:none;">✓ Clear Manual Emergency</button>
         </div>
     </div>
 
@@ -117,25 +63,6 @@
             L2: <span id="c_lane2">0</span> | 
             L3: <span id="c_lane3">0</span> | 
             L4: <span id="c_lane4">0</span>
-        </div>
-        <div style="margin-top:10px; padding:10px; background:#1e293b; border-radius:6px;">
-            <b>📊 Total Traffic Flow (All Lanes)</b>
-            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap:10px; margin-top:8px;">
-                <div>🚗 Cars: <b><span id="total_cars">0</span></b></div>
-                <div>🚚 Trucks: <b><span id="total_trucks">0</span></b></div>
-                <div>🚌 Buses: <b><span id="total_buses">0</span></b></div>
-                <div>🏍️ Two-Wheelers: <b><span id="total_twowheelers">0</span></b></div>
-                <div>🚲 Bicycles: <b><span id="total_bicycles">0</span></b></div>
-                <div style="color:#60a5fa;">📈 Total: <b><span id="total_vehicles">0</span></b></div>
-            </div>
-            <div style="margin-top:10px; padding-top:10px; border-top:1px solid #334155;">
-                <b>⚡ Average Metrics</b>
-                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap:10px; margin-top:8px;">
-                    <div>Occupancy: <b><span id="avg_occupancy">0</span>%</b></div>
-                    <div>Queue Length: <b><span id="avg_queue">0</span></b></div>
-                    <div>Speed: <b><span id="avg_speed">--</span> km/h</b></div>
-                </div>
-            </div>
         </div>
         <div style="margin-top:10px">
             <b>Suggested order</b>: <span id="orderBadges"></span>
@@ -197,80 +124,24 @@
                 <div style="margin-bottom:6px; opacity:0.8;">Lane 1</div>
                 <img id="img_lane1" src="" alt="Lane 1" />
                 <div class="density-badge" id="d_lane1">0% density</div>
-                <div style="margin-top:6px; padding:8px; background:#1e293b; border-radius:4px; font-size:0.82em;">
-                    <div style="font-weight:bold; margin-bottom:4px; color:#60a5fa;">Vehicle Distribution</div>
-                    <div style="margin-bottom:2px;">🚗 Cars: <span id="cars_lane1">0</span></div>
-                    <div style="margin-bottom:2px;">🚚 Trucks: <span id="trucks_lane1">0</span></div>
-                    <div style="margin-bottom:2px;">🚌 Buses: <span id="buses_lane1">0</span></div>
-                    <div style="margin-bottom:2px;">🏍️ Two-Wheelers: <span id="twowheelers_lane1">0</span></div>
-                    <div>🚲 Bicycles: <span id="bicycles_lane1">0</span></div>
-                </div>
-                <div style="margin-top:6px; padding:8px; background:#0f172a; border-radius:4px; font-size:0.82em;">
-                    <div style="font-weight:bold; margin-bottom:4px; color:#34d399;">Lane Metrics</div>
-                    <div style="margin-bottom:2px;">📊 Occupancy: <span id="occupancy_lane1">0</span>%</div>
-                    <div style="margin-bottom:2px;">📏 Queue Length: <span id="queue_lane1">0</span></div>
-                    <div>⚡ Avg Speed: <span id="speed_lane1">--</span> km/h</div>
-                </div>
                 <button class="lane-action" data-lane="lane1">Delete/Reset</button>
             </div>
             <div class="preview-item">
                 <div style="margin-bottom:6px; opacity:0.8;">Lane 2</div>
                 <img id="img_lane2" src="" alt="Lane 2" />
                 <div class="density-badge" id="d_lane2">0% density</div>
-                <div style="margin-top:6px; padding:8px; background:#1e293b; border-radius:4px; font-size:0.82em;">
-                    <div style="font-weight:bold; margin-bottom:4px; color:#60a5fa;">Vehicle Distribution</div>
-                    <div style="margin-bottom:2px;">🚗 Cars: <span id="cars_lane2">0</span></div>
-                    <div style="margin-bottom:2px;">🚚 Trucks: <span id="trucks_lane2">0</span></div>
-                    <div style="margin-bottom:2px;">🚌 Buses: <span id="buses_lane2">0</span></div>
-                    <div style="margin-bottom:2px;">🏍️ Two-Wheelers: <span id="twowheelers_lane2">0</span></div>
-                    <div>🚲 Bicycles: <span id="bicycles_lane2">0</span></div>
-                </div>
-                <div style="margin-top:6px; padding:8px; background:#0f172a; border-radius:4px; font-size:0.82em;">
-                    <div style="font-weight:bold; margin-bottom:4px; color:#34d399;">Lane Metrics</div>
-                    <div style="margin-bottom:2px;">📊 Occupancy: <span id="occupancy_lane2">0</span>%</div>
-                    <div style="margin-bottom:2px;">📏 Queue Length: <span id="queue_lane2">0</span></div>
-                    <div>⚡ Avg Speed: <span id="speed_lane2">--</span> km/h</div>
-                </div>
                 <button class="lane-action" data-lane="lane2">Delete/Reset</button>
             </div>
             <div class="preview-item">
                 <div style="margin-bottom:6px; opacity:0.8;">Lane 3</div>
                 <img id="img_lane3" src="" alt="Lane 3" />
                 <div class="density-badge" id="d_lane3">0% density</div>
-                <div style="margin-top:6px; padding:8px; background:#1e293b; border-radius:4px; font-size:0.82em;">
-                    <div style="font-weight:bold; margin-bottom:4px; color:#60a5fa;">Vehicle Distribution</div>
-                    <div style="margin-bottom:2px;">🚗 Cars: <span id="cars_lane3">0</span></div>
-                    <div style="margin-bottom:2px;">🚚 Trucks: <span id="trucks_lane3">0</span></div>
-                    <div style="margin-bottom:2px;">🚌 Buses: <span id="buses_lane3">0</span></div>
-                    <div style="margin-bottom:2px;">🏍️ Two-Wheelers: <span id="twowheelers_lane3">0</span></div>
-                    <div>🚲 Bicycles: <span id="bicycles_lane3">0</span></div>
-                </div>
-                <div style="margin-top:6px; padding:8px; background:#0f172a; border-radius:4px; font-size:0.82em;">
-                    <div style="font-weight:bold; margin-bottom:4px; color:#34d399;">Lane Metrics</div>
-                    <div style="margin-bottom:2px;">📊 Occupancy: <span id="occupancy_lane3">0</span>%</div>
-                    <div style="margin-bottom:2px;">📏 Queue Length: <span id="queue_lane3">0</span></div>
-                    <div>⚡ Avg Speed: <span id="speed_lane3">--</span> km/h</div>
-                </div>
                 <button class="lane-action" data-lane="lane3">Delete/Reset</button>
             </div>
             <div class="preview-item">
                 <div style="margin-bottom:6px; opacity:0.8;">Lane 4</div>
                 <img id="img_lane4" src="" alt="Lane 4" />
                 <div class="density-badge" id="d_lane4">0% density</div>
-                <div style="margin-top:6px; padding:8px; background:#1e293b; border-radius:4px; font-size:0.82em;">
-                    <div style="font-weight:bold; margin-bottom:4px; color:#60a5fa;">Vehicle Distribution</div>
-                    <div style="margin-bottom:2px;">🚗 Cars: <span id="cars_lane4">0</span></div>
-                    <div style="margin-bottom:2px;">🚚 Trucks: <span id="trucks_lane4">0</span></div>
-                    <div style="margin-bottom:2px;">🚌 Buses: <span id="buses_lane4">0</span></div>
-                    <div style="margin-bottom:2px;">🏍️ Two-Wheelers: <span id="twowheelers_lane4">0</span></div>
-                    <div>🚲 Bicycles: <span id="bicycles_lane4">0</span></div>
-                </div>
-                <div style="margin-top:6px; padding:8px; background:#0f172a; border-radius:4px; font-size:0.82em;">
-                    <div style="font-weight:bold; margin-bottom:4px; color:#34d399;">Lane Metrics</div>
-                    <div style="margin-bottom:2px;">📊 Occupancy: <span id="occupancy_lane4">0</span>%</div>
-                    <div style="margin-bottom:2px;">📏 Queue Length: <span id="queue_lane4">0</span></div>
-                    <div>⚡ Avg Speed: <span id="speed_lane4">--</span> km/h</div>
-                </div>
                 <button class="lane-action" data-lane="lane4">Delete/Reset</button>
             </div>
         </div>
@@ -279,146 +150,19 @@
 </div>
 
 <script>
-// 🔥 EMERGENCY OVERRIDE - Version 3.0
-console.log('🔥 DASHBOARD SCRIPT LOADED - Emergency Override v3.0');
-console.log('✅ JS file execution started - timestamp:', new Date().toISOString());
-
-// INLINE EMERGENCY FORCE FUNCTION - HIGHEST PRIORITY
-window.FORCE_EMERGENCY_NOW = function(laneNum) {
-    console.log('🚨🚨🚨 INLINE EMERGENCY FORCE:', laneNum);
-    const laneId = 'lane' + laneNum;
-    
-    // FORCE ALL LANES RED
-    for (let i = 1; i <= 4; i++) {
-        const l = document.getElementById('lane' + i);
-        if (l) {
-            l.querySelectorAll('.light').forEach(el => el.classList.remove('on'));
-            const red = l.querySelector('.light.red');
-            if (red) red.classList.add('on');
-        }
-    }
-    
-    // FORCE EMERGENCY LANE GREEN
-    const eLane = document.getElementById(laneId);
-    if (eLane) {
-        eLane.querySelectorAll('.light').forEach(el => el.classList.remove('on'));
-        const green = eLane.querySelector('.light.green');
-        if (green) green.classList.add('on');
-    }
-    
-    console.log('✅✅✅ INLINE EMERGENCY FORCED');
-};
-
-console.log('✅ Inline emergency override function ready');
-
 // live data updater: pulls lane counts from server
 function fetchData() {
-    // 🚨 CRITICAL: Don't sync with server during emergency - local emergency takes priority
-    if (emergencyActive) {
-        console.log('⏸️ fetchData blocked - Emergency mode active');
-        return;
-    }
-    
     fetch('/data')
         .then(response => response.json())
         .then(data => {
             if (data && data.lanes) {
                 applyServerLanes(data.lanes);
-                
-                // Check for manual emergency (highest priority)
-                const manualEmergencyEnabled = data.manual_emergency_enabled || false;
-                const manualEmergencyLaneServer = data.manual_emergency_lane;
-                const manualStatusEl = document.getElementById('manualEmergencyStatus');
-                const manualActiveLaneEl = document.getElementById('manualActiveLane');
-                const activateManualBtn = document.getElementById('activateManualBtn');
-                const clearManualBtn = document.getElementById('clearManualBtn');
-                
-                if (manualEmergencyEnabled && manualEmergencyLaneServer) {
-                    // Sync local state with server
-                    if (!emergencyActive || manualEmergencyLane !== manualEmergencyLaneServer) {
-                        emergencyActive = true;
-                        manualEmergencyLane = manualEmergencyLaneServer;
-                        
-                        // Stop cycling and set signals
-                        cycling = false;
-                        if (countdownIntervalId) {
-                            clearInterval(countdownIntervalId);
-                            countdownIntervalId = null;
-                        }
-                        
-                        // Set all lanes RED except emergency lane
-                        ['lane1','lane2','lane3','lane4'].forEach(l => {
-                            if (l === manualEmergencyLaneServer) {
-                                setLights(l, 'green');
-                            } else {
-                                setLights(l, 'red');
-                            }
-                        });
-                        
-                        openLane.textContent = manualEmergencyLaneServer.replace('lane','Lane ');
-                        openSeconds.textContent = '∞ (EMERGENCY)';
-                        resetLaneTimers();
-                    }
-                    
-                    if (manualStatusEl) {
-                        manualStatusEl.style.display = 'block';
-                        if (manualActiveLaneEl) {
-                            manualActiveLaneEl.textContent = manualEmergencyLaneServer.replace('lane', 'Lane ');
-                        }
-                    }
-                    if (activateManualBtn) activateManualBtn.style.display = 'none';
-                    if (clearManualBtn) clearManualBtn.style.display = 'inline-block';
-                } else {
-                    // Clear emergency if server says it's not active
-                    if (emergencyActive && !manualEmergencyEnabled) {
-                        emergencyActive = false;
-                        manualEmergencyLane = null;
-                    }
-                    
-                    if (manualStatusEl) {
-                        manualStatusEl.style.display = 'none';
-                    }
-                    if (activateManualBtn) activateManualBtn.style.display = 'inline-block';
-                    if (clearManualBtn) clearManualBtn.style.display = 'none';
-                }
-                
-                // Check for emergency vehicles (detection-based, real-time) - lower priority than manual
-                let hasEmergency = false;
-                let emergencyLaneName = null;
-                let emergencyVehicleCount_val = 0;
-                if (!manualEmergencyEnabled) {  // Only show AI emergency if manual is not active
-                    Object.entries(data.lanes).forEach(([lane, info]) => {
-                        if (info.has_emergency) {
-                            hasEmergency = true;
-                            emergencyLaneName = lane;
-                            emergencyVehicleCount_val += info.emergency_count || 0;
-                        }
-                    });
-                }
-                
-                if (hasEmergency && emergencyAlert && emergencyLane) {
-                    emergencyAlert.style.display = 'block';
-                    emergencyLane.textContent = emergencyLaneName.replace('lane', 'LANE ');
-                    const emergencyLaneNameEl = document.getElementById('emergencyLaneName');
-                    if (emergencyLaneNameEl) {
-                        emergencyLaneNameEl.textContent = emergencyLaneName.replace('lane', 'Lane ');
-                    }
-                    if (emergencyVehicleCount) {
-                        emergencyVehicleCount.textContent = emergencyVehicleCount_val;
-                    }
-                    if (emergencyStatus) {
-                        emergencyStatus.textContent = `🚨 Emergency vehicle detected in ${emergencyLaneName.replace('lane', 'Lane ')}! Green light active until vehicle fully crosses junction.`;
-                    }
-                } else if (emergencyAlert && emergencyStatus) {
-                    emergencyAlert.style.display = 'none';
-                    emergencyStatus.textContent = 'No emergency vehicles detected. System in normal mode.';
-                }
             }
         })
         .catch(err => console.error(err));
 }
 fetchData();
-setInterval(fetchData, 500);  // Update every 500ms for real-time detection status
+setInterval(fetchData, 2000);
 
 // camera + upload handling
 const video = document.getElementById('video');
@@ -431,7 +175,7 @@ const classList = document.getElementById('classList');
 const laneLabel = document.getElementById('laneLabel');
 const recommend = document.getElementById('recommend');
 const drop = document.getElementById('drop');
-const browseBtn = document.getElementById('browseLabel') || document.getElementById('browseBtn');
+const browseBtn = document.getElementById('browseBtn');
 const openSeconds = document.getElementById('openSeconds');
 const openLane = document.getElementById('openLane');
 const laneSelect = document.getElementById('laneSelect');
@@ -452,17 +196,6 @@ const densityEls = {
     lane3: document.getElementById('d_lane3'),
     lane4: document.getElementById('d_lane4'),
 };
-const emergencyAlert = document.getElementById('emergencyAlert');
-const emergencyLane = document.getElementById('emergencyLane');
-const emergencyStatus = document.getElementById('emergencyStatus');
-const emergencyVehicleCount = document.getElementById('emergencyVehicleCount');
-const emergencyCountdown = document.getElementById('emergencyCountdown');
-const emergencyLane1Btn = document.getElementById('emergencyLane1Btn');
-const emergencyLane2Btn = document.getElementById('emergencyLane2Btn');
-const emergencyLane3Btn = document.getElementById('emergencyLane3Btn');
-const emergencyLane4Btn = document.getElementById('emergencyLane4Btn');
-const clearEmergencyBtn = document.getElementById('clearEmergencyBtn');
-const normalModeBtn = document.getElementById('normalModeBtn');
 const deleteButtons = Array.from(document.querySelectorAll('.lane-action'));
 const countEls = {
     lane1: document.getElementById('c_lane1'),
@@ -470,72 +203,8 @@ const countEls = {
     lane3: document.getElementById('c_lane3'),
     lane4: document.getElementById('c_lane4'),
 };
-const vehicleTypeEls = {
-    lane1: { 
-        cars: document.getElementById('cars_lane1'), 
-        trucks: document.getElementById('trucks_lane1'),
-        buses: document.getElementById('buses_lane1'),
-        twowheelers: document.getElementById('twowheelers_lane1'),
-        bicycles: document.getElementById('bicycles_lane1')
-    },
-    lane2: { 
-        cars: document.getElementById('cars_lane2'), 
-        trucks: document.getElementById('trucks_lane2'),
-        buses: document.getElementById('buses_lane2'),
-        twowheelers: document.getElementById('twowheelers_lane2'),
-        bicycles: document.getElementById('bicycles_lane2')
-    },
-    lane3: { 
-        cars: document.getElementById('cars_lane3'), 
-        trucks: document.getElementById('trucks_lane3'),
-        buses: document.getElementById('buses_lane3'),
-        twowheelers: document.getElementById('twowheelers_lane3'),
-        bicycles: document.getElementById('bicycles_lane3')
-    },
-    lane4: { 
-        cars: document.getElementById('cars_lane4'), 
-        trucks: document.getElementById('trucks_lane4'),
-        buses: document.getElementById('buses_lane4'),
-        twowheelers: document.getElementById('twowheelers_lane4'),
-        bicycles: document.getElementById('bicycles_lane4')
-    },
-};
-const laneMetricsEls = {
-    lane1: {
-        occupancy: document.getElementById('occupancy_lane1'),
-        queue: document.getElementById('queue_lane1'),
-        speed: document.getElementById('speed_lane1')
-    },
-    lane2: {
-        occupancy: document.getElementById('occupancy_lane2'),
-        queue: document.getElementById('queue_lane2'),
-        speed: document.getElementById('speed_lane2')
-    },
-    lane3: {
-        occupancy: document.getElementById('occupancy_lane3'),
-        queue: document.getElementById('queue_lane3'),
-        speed: document.getElementById('speed_lane3')
-    },
-    lane4: {
-        occupancy: document.getElementById('occupancy_lane4'),
-        queue: document.getElementById('queue_lane4'),
-        speed: document.getElementById('speed_lane4')
-    }
-};
 let laneCounts = { lane1: 0, lane2: 0, lane3: 0, lane4: 0 };
 let laneGreen = { lane1: 10, lane2: 10, lane3: 10, lane4: 10 };
-let laneVehicleTypes = {
-    lane1: { car: 0, truck: 0, bus: 0, two_wheeler: 0, bicycle: 0 },
-    lane2: { car: 0, truck: 0, bus: 0, two_wheeler: 0, bicycle: 0 },
-    lane3: { car: 0, truck: 0, bus: 0, two_wheeler: 0, bicycle: 0 },
-    lane4: { car: 0, truck: 0, bus: 0, two_wheeler: 0, bicycle: 0 },
-};
-let laneMetrics = {
-    lane1: { occupancy_rate: 0, queue_length: 0, avg_speed: 0 },
-    lane2: { occupancy_rate: 0, queue_length: 0, avg_speed: 0 },
-    lane3: { occupancy_rate: 0, queue_length: 0, avg_speed: 0 },
-    lane4: { occupancy_rate: 0, queue_length: 0, avg_speed: 0 },
-};
 let cycling = false;
 let stream = null;
 let fixedOrder = null; // set by "Use order" button
@@ -545,10 +214,6 @@ const laneTimerEls = {
     lane3: document.getElementById('t_lane3'),
     lane4: document.getElementById('t_lane4'),
 };
-let manualEmergencyLane = null; // Track manually activated emergency lane
-let emergencyActive = false; // 🚨 CRITICAL: Blocks timer during emergency
-let countdownIntervalId = null; // Track the countdown timer to clear it during emergency
-let emergencyEnforcerInterval = null; // 🔥 Continuously enforce emergency signal state
 
 startBtn.addEventListener('click', async () => {
     if (stream) return;
@@ -582,23 +247,8 @@ startBtn.addEventListener('click', async () => {
     }
 });
 
-browseBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    console.log('Browse clicked, triggering fileInput');
-    if (fileInput) {
-        // Force focus and click
-        fileInput.focus();
-        fileInput.click();
-    }
-});
-multiBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    console.log('Multi button clicked, triggering multiInput');
-    if (multiInput) {
-        multiInput.focus();
-        multiInput.click();
-    }
-});
+browseBtn.addEventListener('click', () => fileInput.click());
+multiBtn.addEventListener('click', () => multiInput.click());
 drop.addEventListener('dragover', (e) => { e.preventDefault(); drop.classList.add('hover'); });
 drop.addEventListener('dragleave', () => drop.classList.remove('hover'));
 drop.addEventListener('drop', (e) => {
@@ -629,155 +279,55 @@ stopCamBtn.addEventListener('click', () => {
 });
 
 fileInput.addEventListener('change', async (e) => {
-    console.log('File input changed:', e.target.files);
     const f = e.target.files[0];
-    if (!f) {
-        console.warn('No file selected');
-        return;
-    }
-    console.log('Uploading file:', f.name);
+    if (!f) return;
     uploadFile(f);
 });
 
 async function uploadFile(f) {
-    try {
-        console.log('uploadFile called with:', f.name);
-        const form = new FormData();
-        form.append('image', f);
-        form.append('lane', laneSelect.value);
-        const res = await fetch('/upload', { method: 'POST', body: form });
-        if (!res.ok) {
-            const err = await res.text();
-            console.error('Upload failed:', res.status, err);
-            alert(`Upload failed: ${res.status}`);
-            return;
-        }
-        const data = await res.json();
-        console.log('Upload response:', data);
-        showResults(data);
-    } catch (err) {
-        console.error('Upload error:', err);
-        alert('Upload error: ' + err.message);
-    }
+    const form = new FormData();
+    form.append('image', f);
+    form.append('lane', laneSelect.value);
+    const res = await fetch('/upload', { method: 'POST', body: form });
+    const data = await res.json();
+    showResults(data);
 }
 
 async function uploadBase64(dataUrl) {
-    try {
-        const res = await fetch('/upload', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ image: dataUrl, lane: laneSelect.value })
-        });
-        if (!res.ok) {
-            const err = await res.text();
-            console.error('Upload failed:', res.status, err);
-            alert(`Upload failed: ${res.status}`);
-            return;
-        }
-        const data = await res.json();
-        showResults(data);
-    } catch (err) {
-        console.error('Upload error:', err);
-        alert('Upload error: ' + err.message);
-    }
+    const res = await fetch('/upload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: dataUrl, lane: laneSelect.value })
+    });
+    const data = await res.json();
+    showResults(data);
 }
 
 multiInput.addEventListener('change', async (e) => {
-    try {
-        console.log('Multi-upload triggered');
-        const files = Array.from(e.target.files || []);
-        if (files.length === 0) return;
-        console.log(`Uploading ${files.length} files to lanes`);
-        const form = new FormData();
-        ['lane1','lane2','lane3','lane4'].forEach((lane, idx) => {
-            if (files[idx]) {
-                form.append(lane, files[idx]);
-                console.log(`Added ${files[idx].name} to ${lane}`);
-            }
-        });
-        const res = await fetch('/upload-multi', { method: 'POST', body: form });
-        if (!res.ok) {
-            const err = await res.text();
-            console.error('Multi-upload failed:', res.status, err);
-            alert(`Multi-upload failed: ${res.status}`);
-            return;
-        }
-        const data = await res.json();
-        console.log('Multi-upload response:', data);
-        
-        // Update server lanes data
-        if (data && data.lanes) applyServerLanes(data.lanes);
-        
-        // Update preview images with processed images
-        if (data.results) {
-            Object.entries(data.results).forEach(([lane, result]) => {
-                console.log(`Setting ${lane} image to`, result.processed_image);
-                if (previewImgs[lane]) {
-                    previewImgs[lane].src = result.processed_image;
-                }
-                // Also update the main result display
-                if (laneCounts) laneCounts[lane] = result.vehicles || 0;
-            });
-            // Show main result image from first lane with results
-            const first = Object.values(data.results || {})[0];
-            if (first && first.processed_image) {
-                console.log('Displaying first result image:', first.processed_image);
-                processedImg.style.display = 'block';
-                processedImg.src = first.processed_image;
-                setTimeout(() => {
-                    processedImg.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }, 100);
-            }
-        }
-    } catch (err) {
-        console.error('Multi-upload error:', err);
-        alert('Multi-upload error: ' + err.message);
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+    const form = new FormData();
+    ['lane1','lane2','lane3','lane4'].forEach((lane, idx) => {
+        if (files[idx]) form.append(lane, files[idx]);
+    });
+    const res = await fetch('/upload-multi', { method: 'POST', body: form });
+    const data = await res.json();
+    if (data && data.lanes) applyServerLanes(data.lanes);
+    const first = Object.values(data.results || {})[0];
+    if (first && first.processed_image) {
+        processedImg.style.display = 'block';
+        processedImg.src = first.processed_image;
     }
 });
 
 function showResults(data) {
-    console.log('showResults called with:', data);
-    if (!data) {
-        console.warn('No data provided to showResults');
-        return;
-    }
-    if (!data.processed_image) {
-        console.warn('No processed_image in response:', data);
-        return;
-    }
-    
-    console.log('Displaying processed image:', data.processed_image);
+    if (!data || !data.processed_image) return;
     processedImg.style.display = 'block';
     processedImg.src = data.processed_image;
-    
-    // Scroll to show the result
-    setTimeout(() => {
-        processedImg.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 100);
-    
-    // Add error handler to see if image fails to load
-    processedImg.onerror = function() {
-        console.error('⚠️ Image failed to load:', data.processed_image);
-        alert('Image failed to load: ' + data.processed_image);
-    };
-    processedImg.onload = function() {
-        console.log('✅ Image loaded successfully');
-    };
-    
     laneLabel.style.display = 'block';
     const lane = laneSelect.value;
     laneCounts[lane] = data.vehicles || 0;
     laneGreen[lane] = data.green_time || computeGreenTime(laneCounts[lane]);
-    
-    // Show emergency vehicle indicator
-    if (data.has_emergency && emergencyAlert && emergencyLane) {
-        emergencyAlert.style.display = 'block';
-        emergencyLane.textContent = lane.replace('lane', 'LANE ');
-        if (emergencyStatus) {
-            emergencyStatus.textContent = `🚨 Emergency vehicle detected in ${lane.replace('lane', 'Lane ')}! Giving priority green light.`;
-        }
-    }
-    
     laneLabel.textContent = `${lane.replace('lane','Lane ')} — Vehicles Detected: ${laneCounts[lane]}`;
     classList.style.display = 'block';
     classList.innerHTML = '';
@@ -798,51 +348,10 @@ function showResults(data) {
 }
 
 function setLights(laneId, color) {
-    // 🚨 BLOCK ALL SIGNAL CHANGES DURING EMERGENCY
-    if (emergencyActive) {
-        console.log('⛔ setLights BLOCKED - Emergency mode active');
-        return;
-    }
-    
-    console.log(`🚦 setLights called: laneId="${laneId}", color="${color}"`);
     const lane = document.getElementById(laneId);
-    if (!lane) {
-        console.error(`❌ Lane element not found: ${laneId}`);
-        return;
-    }
-    console.log(`✅ Found lane element:`, lane);
+    if (!lane) return;
     lane.querySelectorAll('.light').forEach(el => el.classList.remove('on'));
-    const lightEl = lane.querySelector(`.light.${color}`);
-    if (lightEl) {
-        lightEl.classList.add('on');
-        console.log(`✅ Set ${color} light ON for ${laneId}`);
-    } else {
-        console.error(`❌ Light element not found: .light.${color} in ${laneId}`);
-    }
-}
-
-// 🚨 FORCE EMERGENCY SIGNAL STATE - Cannot be overridden
-function forceEmergencySignal(lane) {
-    console.log('🚨 FORCING EMERGENCY SIGNAL:', lane);
-    // Set ALL lanes to RED
-    ['lane1', 'lane2', 'lane3', 'lane4'].forEach(l => {
-        const laneEl = document.getElementById(l);
-        if (laneEl) {
-            laneEl.querySelectorAll('.light').forEach(el => el.classList.remove('on'));
-            const redLight = laneEl.querySelector('.light.red');
-            if (redLight) redLight.classList.add('on');
-        }
-    });
-    
-    // Set ONLY emergency lane to GREEN
-    const emergencyLaneEl = document.getElementById(lane);
-    if (emergencyLaneEl) {
-        emergencyLaneEl.querySelectorAll('.light').forEach(el => el.classList.remove('on'));
-        const greenLight = emergencyLaneEl.querySelector('.light.green');
-        if (greenLight) greenLight.classList.add('on');
-    }
-    
-    console.log('✅ Emergency signal forced successfully');
+    lane.querySelector(`.light.${color}`).classList.add('on');
 }
 
 function applyServerLanes(lanes) {
@@ -858,56 +367,7 @@ function applyServerLanes(lanes) {
         lane3: (lanes.lane3 && lanes.lane3.green_time) ?? laneGreen.lane3,
         lane4: (lanes.lane4 && lanes.lane4.green_time) ?? laneGreen.lane4,
     };
-    laneVehicleTypes = {
-        lane1: (lanes.lane1 && lanes.lane1.vehicle_types) ?? laneVehicleTypes.lane1,
-        lane2: (lanes.lane2 && lanes.lane2.vehicle_types) ?? laneVehicleTypes.lane2,
-        lane3: (lanes.lane3 && lanes.lane3.vehicle_types) ?? laneVehicleTypes.lane3,
-        lane4: (lanes.lane4 && lanes.lane4.vehicle_types) ?? laneVehicleTypes.lane4,
-    };
-    laneMetrics = {
-        lane1: {
-            occupancy_rate: (lanes.lane1 && lanes.lane1.occupancy_rate) ?? 0,
-            queue_length: (lanes.lane1 && lanes.lane1.queue_length) ?? 0,
-            avg_speed: (lanes.lane1 && lanes.lane1.avg_speed) ?? 0
-        },
-        lane2: {
-            occupancy_rate: (lanes.lane2 && lanes.lane2.occupancy_rate) ?? 0,
-            queue_length: (lanes.lane2 && lanes.lane2.queue_length) ?? 0,
-            avg_speed: (lanes.lane2 && lanes.lane2.avg_speed) ?? 0
-        },
-        lane3: {
-            occupancy_rate: (lanes.lane3 && lanes.lane3.occupancy_rate) ?? 0,
-            queue_length: (lanes.lane3 && lanes.lane3.queue_length) ?? 0,
-            avg_speed: (lanes.lane3 && lanes.lane3.avg_speed) ?? 0
-        },
-        lane4: {
-            occupancy_rate: (lanes.lane4 && lanes.lane4.occupancy_rate) ?? 0,
-            queue_length: (lanes.lane4 && lanes.lane4.queue_length) ?? 0,
-            avg_speed: (lanes.lane4 && lanes.lane4.avg_speed) ?? 0
-        }
-    };
     Object.keys(countEls).forEach(k => { countEls[k].textContent = laneCounts[k]; });
-    
-    // Update vehicle type displays
-    Object.keys(vehicleTypeEls).forEach(lane => {
-        const types = laneVehicleTypes[lane] || { car: 0, truck: 0, bus: 0, two_wheeler: 0, bicycle: 0 };
-        if (vehicleTypeEls[lane].cars) vehicleTypeEls[lane].cars.textContent = types.car || 0;
-        if (vehicleTypeEls[lane].trucks) vehicleTypeEls[lane].trucks.textContent = types.truck || 0;
-        if (vehicleTypeEls[lane].buses) vehicleTypeEls[lane].buses.textContent = types.bus || 0;
-        if (vehicleTypeEls[lane].twowheelers) vehicleTypeEls[lane].twowheelers.textContent = types.two_wheeler || 0;
-        if (vehicleTypeEls[lane].bicycles) vehicleTypeEls[lane].bicycles.textContent = types.bicycle || 0;
-    });
-    
-    // Update lane metrics displays
-    Object.keys(laneMetricsEls).forEach(lane => {
-        const metrics = laneMetrics[lane] || { occupancy_rate: 0, queue_length: 0, avg_speed: 0 };
-        if (laneMetricsEls[lane].occupancy) laneMetricsEls[lane].occupancy.textContent = (metrics.occupancy_rate || 0).toFixed(1);
-        if (laneMetricsEls[lane].queue) laneMetricsEls[lane].queue.textContent = (metrics.queue_length || 0).toFixed(1);
-        if (laneMetricsEls[lane].speed) laneMetricsEls[lane].speed.textContent = metrics.avg_speed > 0 ? metrics.avg_speed : '--';
-    });
-    
-    // Update totals
-    updateTotalCounts();
     // update previews
     ['lane1','lane2','lane3','lane4'].forEach(l => {
         const img = lanes[l] && lanes[l].image;
@@ -916,53 +376,6 @@ function applyServerLanes(lanes) {
     updateDensityBadges();
     const order = Object.entries(laneCounts).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0])).map(e=>e[0]);
     showOrder(order);
-}
-
-function updateTotalCounts() {
-    let totalCars = 0, totalTrucks = 0, totalBuses = 0, totalTwoWheelers = 0, totalBicycles = 0;
-    let totalOccupancy = 0, totalQueue = 0, totalSpeed = 0, speedCount = 0;
-    
-    Object.values(laneVehicleTypes).forEach(types => {
-        totalCars += types.car || 0;
-        totalTrucks += types.truck || 0;
-        totalBuses += types.bus || 0;
-        totalTwoWheelers += types.two_wheeler || 0;
-        totalBicycles += types.bicycle || 0;
-    });
-    
-    Object.values(laneMetrics).forEach(metrics => {
-        totalOccupancy += metrics.occupancy_rate || 0;
-        totalQueue += metrics.queue_length || 0;
-        if (metrics.avg_speed > 0) {
-            totalSpeed += metrics.avg_speed;
-            speedCount++;
-        }
-    });
-    
-    const totalVehicles = totalCars + totalTrucks + totalBuses + totalTwoWheelers + totalBicycles;
-    const avgOccupancy = (totalOccupancy / 4).toFixed(1);
-    const avgQueue = (totalQueue / 4).toFixed(1);
-    const avgSpeed = speedCount > 0 ? (totalSpeed / speedCount).toFixed(0) : '--';
-    
-    const totalCarsEl = document.getElementById('total_cars');
-    const totalTrucksEl = document.getElementById('total_trucks');
-    const totalBusesEl = document.getElementById('total_buses');
-    const totalTwoWheelersEl = document.getElementById('total_twowheelers');
-    const totalBicyclesEl = document.getElementById('total_bicycles');
-    const totalVehiclesEl = document.getElementById('total_vehicles');
-    const avgOccupancyEl = document.getElementById('avg_occupancy');
-    const avgQueueEl = document.getElementById('avg_queue');
-    const avgSpeedEl = document.getElementById('avg_speed');
-    
-    if (totalCarsEl) totalCarsEl.textContent = totalCars;
-    if (totalTrucksEl) totalTrucksEl.textContent = totalTrucks;
-    if (totalBusesEl) totalBusesEl.textContent = totalBuses;
-    if (totalTwoWheelersEl) totalTwoWheelersEl.textContent = totalTwoWheelers;
-    if (totalBicyclesEl) totalBicyclesEl.textContent = totalBicycles;
-    if (totalVehiclesEl) totalVehiclesEl.textContent = totalVehicles;
-    if (avgOccupancyEl) avgOccupancyEl.textContent = avgOccupancy;
-    if (avgQueueEl) avgQueueEl.textContent = avgQueue;
-    if (avgSpeedEl) avgSpeedEl.textContent = avgSpeed;
 }
 
 function showOrder(order){
@@ -1020,61 +433,33 @@ async function clearLane(lane) {
         // defensive UI reset
         laneCounts[lane] = 0;
         laneGreen[lane] = computeGreenTime(0);
-        laneVehicleTypes[lane] = { car: 0, truck: 0, bus: 0, two_wheeler: 0, bicycle: 0 };
-        laneMetrics[lane] = { occupancy_rate: 0, queue_length: 0, avg_speed: 0 };
         if (previewImgs[lane]) previewImgs[lane].src = '';
-        if (vehicleTypeEls[lane]) {
-            vehicleTypeEls[lane].cars.textContent = '0';
-            vehicleTypeEls[lane].trucks.textContent = '0';
-            vehicleTypeEls[lane].buses.textContent = '0';
-            vehicleTypeEls[lane].twowheelers.textContent = '0';
-            vehicleTypeEls[lane].bicycles.textContent = '0';
-        }
-        if (laneMetricsEls[lane]) {
-            laneMetricsEls[lane].occupancy.textContent = '0';
-            laneMetricsEls[lane].queue.textContent = '0';
-            laneMetricsEls[lane].speed.textContent = '--';
-        }
         updateDensityBadges();
-        updateTotalCounts();
     } catch (err) {
         console.error(err);
     }
 }
 
 document.getElementById('startCycleBtn').addEventListener('click', () => {
-    if (emergencyActive) {
-        alert('⚠️ Cannot start signal cycle during emergency mode. Clear emergency first.');
-        return;
-    }
     cycling = true;
     runCycle();
 });
 document.getElementById('stopCycleBtn').addEventListener('click', () => {
     cycling = false;
-    if (countdownIntervalId) {
-        clearInterval(countdownIntervalId);
-        countdownIntervalId = null;
-    }
-    // Set all lanes to RED when stopped
-    ['lane1','lane2','lane3','lane4'].forEach(l => setLights(l, 'red'));
     resetLaneTimers();
     openSeconds.textContent = '0';
-    openLane.textContent = 'None';
 });
 
 async function runCycle() {
-    console.log('🔄 runCycle started, cycling=', cycling);
     while (cycling) {
-        // 🚨 BLOCK TIMER DURING EMERGENCY
-        if (emergencyActive) {
-            // Emergency mode is active - do nothing, just wait
-            console.log('⏸️ runCycle blocked - Emergency active');
-            await sleep(1000);
-            continue;
-        }
-        
-        // Normal cycling mode
+        // pick order based on counts (highest first). If all zero, use numeric order
+
+deleteButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+        const lane = btn.getAttribute('data-lane');
+        clearLane(lane);
+    });
+});
         let entries;
         if (Array.isArray(fixedOrder) && fixedOrder.length) {
             entries = fixedOrder.map(l => [l, laneCounts[l] ?? 0]);
@@ -1085,27 +470,15 @@ async function runCycle() {
         }
         const plan = entries.map(([lane,count]) => ({ lane, duration: computeGreenTime(count) }));
         for (let idx=0; idx<plan.length; idx++) {
-            // 🚨 BLOCK TIMER DURING EMERGENCY - Check at start of each iteration
-            if (emergencyActive) {
-                break; // Stop cycle immediately
-            }
             const { lane, duration } = plan[idx];
             if (!cycling) break;
             openLane.textContent = lane.replace('lane','Lane ');
             openSeconds.textContent = duration;
-            
-            // 🚨 BLOCK TIMER DURING EMERGENCY - Check before changing lights
-            if (emergencyActive) break;
-            
             // set all reds
             ['lane1','lane2','lane3','lane4'].forEach(l => setLights(l, 'red'));
             setLights(lane, 'green');
             resetLaneTimers();
             await countdown(plan, idx);
-            
-            // 🚨 BLOCK TIMER DURING EMERGENCY - Check before amber
-            if (emergencyActive) break;
-            
             // amber 2s
             setLights(lane, 'amber');
             await sleep(2000);
@@ -1120,18 +493,11 @@ function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
 async function countdown(plan, currentIdx){
     const current = plan[currentIdx];
     for (let s=current.duration; s>0 && cycling; s--) {
-        // 🚨 BLOCK TIMER DURING EMERGENCY - Check every second
-        if (emergencyActive) {
-            console.log('⛔ Countdown stopped - Emergency mode active');
-            return; // Stop countdown immediately
-        }
         openSeconds.textContent = s;
         updateLaneTimers(plan, currentIdx, s);
         await sleep(1000);
     }
-    if (!emergencyActive && laneTimerEls[current.lane]) {
-        laneTimerEls[current.lane].textContent = '0s';
-    }
+    if (laneTimerEls[current.lane]) laneTimerEls[current.lane].textContent = '0s';
 }
 
 function updateLaneTimers(plan, currentIdx, secondsRemainingCurrent){
@@ -1166,153 +532,6 @@ function stopCamera() {
 // stop camera when tab hidden
 document.addEventListener('visibilitychange', () => {
     if (document.hidden) stopCamera();
-});
-
-// Delete lane button handlers
-deleteButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-        const lane = btn.getAttribute('data-lane');
-        clearLane(lane);
-    });
-});
-
-// Manual Emergency Control Handlers (HIGHEST PRIORITY)
-const activateManualBtn = document.getElementById('activateManualBtn');
-const clearManualBtn = document.getElementById('clearManualBtn');
-const manualLaneRadios = document.querySelectorAll('input[name="manualLane"]');
-
-// Set Lane 1 as default selection
-document.getElementById('radio_lane1').checked = true;
-
-activateManualBtn.addEventListener('click', () => {
-    const selectedLane = document.querySelector('input[name="manualLane"]:checked').value;
-    if (!selectedLane) {
-        alert('Please select a lane first');
-        return;
-    }
-    
-    // 🚨 ACTIVATE EMERGENCY MODE IMMEDIATELY (don't wait for server)
-    console.log('🚨 EMERGENCY ACTIVATED for', selectedLane);
-    emergencyActive = true;
-    manualEmergencyLane = selectedLane;
-    
-    // ❌ STOP NORMAL TIMER AGGRESSIVELY
-    console.log('⛔ Stopping signal cycle...');
-    cycling = false;
-    if (countdownIntervalId) {
-        clearInterval(countdownIntervalId);
-        countdownIntervalId = null;
-    }
-    
-    // 🔥 FORCE EMERGENCY SIGNAL STATE (bypasses all blocks)
-    console.log('🔥 Forcing emergency signal state...');
-    forceEmergencySignal(selectedLane);
-    
-    // 🔥 START EMERGENCY ENFORCER - Re-apply signal every 100ms to prevent override
-    if (emergencyEnforcerInterval) {
-        clearInterval(emergencyEnforcerInterval);
-    }
-    emergencyEnforcerInterval = setInterval(() => {
-        if (emergencyActive && manualEmergencyLane) {
-            console.log('🔒 Emergency enforcer: Re-applying signal state');
-            forceEmergencySignal(manualEmergencyLane);
-        }
-    }, 100); // Re-apply every 100ms to prevent any override
-    
-    // Update UI immediately
-    openLane.textContent = selectedLane.replace('lane','Lane ');
-    openSeconds.textContent = '∞ (EMERGENCY)';
-    resetLaneTimers();
-    
-    // Update manual emergency status display
-    const manualStatusEl = document.getElementById('manualEmergencyStatus');
-    const manualActiveLaneEl = document.getElementById('manualActiveLane');
-    if (manualStatusEl) {
-        manualStatusEl.style.display = 'block';
-        if (manualActiveLaneEl) {
-            manualActiveLaneEl.textContent = selectedLane.replace('lane', 'Lane ');
-        }
-    }
-    
-    // Update button visibility immediately
-    activateManualBtn.style.display = 'none';
-    clearManualBtn.style.display = 'inline-block';
-    
-    // Notify server (async - don't wait)
-    fetch('/activate-manual-emergency', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ lane: selectedLane })
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log('✅ Manual emergency activated on server:', data);
-    })
-    .catch(err => {
-        console.error('Error activating manual emergency:', err);
-    });
-});
-
-clearManualBtn.addEventListener('click', () => {
-    // 🧹 CLEAR EMERGENCY IMMEDIATELY
-    emergencyActive = false;
-    manualEmergencyLane = null;
-    
-    // 🛑 STOP EMERGENCY ENFORCER
-    if (emergencyEnforcerInterval) {
-        clearInterval(emergencyEnforcerInterval);
-        emergencyEnforcerInterval = null;
-        console.log('🛑 Emergency enforcer stopped');
-    }
-    
-    // Update manual emergency status display
-    const manualStatusEl = document.getElementById('manualEmergencyStatus');
-    if (manualStatusEl) {
-        manualStatusEl.style.display = 'none';
-    }
-    
-    // Update button visibility immediately
-    activateManualBtn.style.display = 'inline-block';
-    clearManualBtn.style.display = 'none';
-    
-    // 🔴 Set all lanes RED immediately
-    ['lane1','lane2','lane3','lane4'].forEach(l => setLights(l, 'red'));
-    
-    // Reset UI immediately
-    openLane.textContent = 'None';
-    openSeconds.textContent = '0';
-    resetLaneTimers();
-    
-    // Notify server (async - don't wait)
-    fetch('/clear-manual-emergency', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log('✅ Manual emergency cleared on server:', data);
-    })
-    .catch(err => {
-        console.error('Error clearing manual emergency:', err);
-    });
-});
-    });
-});
-
-// Emergency detection is now automatic from image uploads
-// Manual override added for traffic police control
-
-function clearManualEmergency() {
-    // Emergency is automatically managed by the system now
-    // This would only be useful if system is stuck
-    console.log('Emergency clearing requested (manual override)');
-}
-
-// Note: Emergency buttons removed - system uses automatic detection
-// If manual override is needed in future, can be re-enabled
-clearEmergencyBtn.addEventListener('click', () => {
-    console.log('Manual emergency override clicked');
-    // Currently not needed - system clears automatically when vehicle passes
 });
 </script>
 
