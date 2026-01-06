@@ -124,24 +124,28 @@
                 <div style="margin-bottom:6px; opacity:0.8;">Lane 1</div>
                 <img id="img_lane1" src="" alt="Lane 1" />
                 <div class="density-badge" id="d_lane1">0% density</div>
+                <div id="vd_lane1" style="margin-top:6px; font-size:0.95em; opacity:0.9;">Vehicle Distribution — Cars: 0 Trucks: 0 Buses: 0 Two-Wheelers: 0 Bicycles: 0</div>
                 <button class="lane-action" data-lane="lane1">Delete/Reset</button>
             </div>
             <div class="preview-item">
                 <div style="margin-bottom:6px; opacity:0.8;">Lane 2</div>
                 <img id="img_lane2" src="" alt="Lane 2" />
                 <div class="density-badge" id="d_lane2">0% density</div>
+                <div id="vd_lane2" style="margin-top:6px; font-size:0.95em; opacity:0.9;">Vehicle Distribution — Cars: 0 Trucks: 0 Buses: 0 Two-Wheelers: 0 Bicycles: 0</div>
                 <button class="lane-action" data-lane="lane2">Delete/Reset</button>
             </div>
             <div class="preview-item">
                 <div style="margin-bottom:6px; opacity:0.8;">Lane 3</div>
                 <img id="img_lane3" src="" alt="Lane 3" />
                 <div class="density-badge" id="d_lane3">0% density</div>
+                <div id="vd_lane3" style="margin-top:6px; font-size:0.95em; opacity:0.9;">Vehicle Distribution — Cars: 0 Trucks: 0 Buses: 0 Two-Wheelers: 0 Bicycles: 0</div>
                 <button class="lane-action" data-lane="lane3">Delete/Reset</button>
             </div>
             <div class="preview-item">
                 <div style="margin-bottom:6px; opacity:0.8;">Lane 4</div>
                 <img id="img_lane4" src="" alt="Lane 4" />
                 <div class="density-badge" id="d_lane4">0% density</div>
+                <div id="vd_lane4" style="margin-top:6px; font-size:0.95em; opacity:0.9;">Vehicle Distribution — Cars: 0 Trucks: 0 Buses: 0 Two-Wheelers: 0 Bicycles: 0</div>
                 <button class="lane-action" data-lane="lane4">Delete/Reset</button>
             </div>
         </div>
@@ -195,6 +199,12 @@ const densityEls = {
     lane2: document.getElementById('d_lane2'),
     lane3: document.getElementById('d_lane3'),
     lane4: document.getElementById('d_lane4'),
+};
+const vehicleDistEls = {
+    lane1: document.getElementById('vd_lane1'),
+    lane2: document.getElementById('vd_lane2'),
+    lane3: document.getElementById('vd_lane3'),
+    lane4: document.getElementById('vd_lane4'),
 };
 const deleteButtons = Array.from(document.querySelectorAll('.lane-action'));
 const countEls = {
@@ -372,6 +382,15 @@ function applyServerLanes(lanes) {
     ['lane1','lane2','lane3','lane4'].forEach(l => {
         const img = lanes[l] && lanes[l].image;
         if (img) previewImgs[l].src = img;
+        const vt = lanes[l] && lanes[l].vehicle_types;
+        if (vt && vehicleDistEls[l]) {
+            const cars = vt.car ?? 0;
+            const trucks = vt.truck ?? 0;
+            const buses = vt.bus ?? 0;
+            const tw = vt.two_wheeler ?? 0;
+            const bikes = vt.bicycle ?? 0;
+            vehicleDistEls[l].textContent = `Vehicle Distribution — Cars: ${cars} Trucks: ${trucks} Buses: ${buses} Two-Wheelers: ${tw} Bicycles: ${bikes}`;
+        }
     });
     updateDensityBadges();
     const order = Object.entries(laneCounts).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0])).map(e=>e[0]);

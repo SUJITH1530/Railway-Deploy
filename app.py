@@ -5,6 +5,7 @@ import os
 import threading
 import base64
 from werkzeug.utils import secure_filename
+import random
 
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
@@ -14,21 +15,67 @@ shared_state = {
     'vehicles': 0,
     'green_time': calculate_green_time(0),
     'lanes': {
-        'lane1': {'count': 0, 'green_time': 10, 'image': None},
-        'lane2': {'count': 0, 'green_time': 10, 'image': None},
-        'lane3': {'count': 0, 'green_time': 10, 'image': None},
-        'lane4': {'count': 0, 'green_time': 10, 'image': None},
+        'lane1': {
+            'count': 0,
+            'green_time': 10,
+            'image': None,
+            'vehicle_types': {'car': 0, 'truck': 0, 'bus': 0, 'two_wheeler': 0, 'bicycle': 0}
+        },
+        'lane2': {
+            'count': 0,
+            'green_time': 10,
+            'image': None,
+            'vehicle_types': {'car': 0, 'truck': 0, 'bus': 0, 'two_wheeler': 0, 'bicycle': 0}
+        },
+        'lane3': {
+            'count': 0,
+            'green_time': 10,
+            'image': None,
+            'vehicle_types': {'car': 0, 'truck': 0, 'bus': 0, 'two_wheeler': 0, 'bicycle': 0}
+        },
+        'lane4': {
+            'count': 0,
+            'green_time': 10,
+            'image': None,
+            'vehicle_types': {'car': 0, 'truck': 0, 'bus': 0, 'two_wheeler': 0, 'bicycle': 0}
+        },
     },
 }
 
 
-def _update_lane(lane: str, count: int, processed_name: str | None):
+def _update_lane(lane: str, count: int, processed_name: str | None, classes: dict | None = None):
     lane = lane if lane in shared_state['lanes'] else 'lane1'
     g = calculate_green_time(count)
     shared_state['lanes'][lane]['count'] = int(count)
     shared_state['lanes'][lane]['green_time'] = int(g)
     if processed_name:
         shared_state['lanes'][lane]['image'] = f"/static/processed/{processed_name}"
+    # update per-vehicle-type distribution
+    vt = shared_state['lanes'][lane].get('vehicle_types') or {'car': 0, 'truck': 0, 'bus': 0, 'two_wheeler': 0, 'bicycle': 0}
+    for k in ('car', 'truck', 'bus', 'two_wheeler', 'bicycle'):
+        vt[k] = 0
+    if classes and isinstance(classes, dict):
+        for lbl, val in classes.items():
+            key = None
+            if lbl == 'car':
+                key = 'car'
+            elif lbl == 'truck':
+                key = 'truck'
+            elif lbl == 'bus':
+                key = 'bus'
+            elif lbl in ('motorbike', 'motorcycle', 'bike'):
+                key = 'two_wheeler'
+            elif lbl == 'bicycle':
+                key = 'bicycle'
+            elif lbl == 'vehicle':
+                # generic fallback from contour method
+                key = 'car'
+            if key:
+                try:
+                    vt[key] = vt.get(key, 0) + int(val)
+                except Exception:
+                    pass
+    shared_state['lanes'][lane]['vehicle_types'] = vt
 
 @app.route('/data')
 def data():
@@ -63,6 +110,7 @@ def clear_lane():
     shared_state['lanes'][lane]['image'] = None
     shared_state['lanes'][lane]['count'] = 0
     shared_state['lanes'][lane]['green_time'] = calculate_green_time(0)
+    shared_state['lanes'][lane]['vehicle_types'] = {'car': 0, 'truck': 0, 'bus': 0, 'two_wheeler': 0, 'bicycle': 0}
     return jsonify({'status': 'cleared', 'lanes': shared_state['lanes']})
 
 
@@ -98,7 +146,7 @@ def upload_image():
     processed_name, vehicles, classes = process_image(in_path, processed_dir)
     green = calculate_green_time(vehicles)
     if lane:
-        _update_lane(lane, vehicles, processed_name)
+        _update_lane(lane, vehicles, processed_name, classes)
     return jsonify({
         'processed_image': f"/static/processed/{processed_name}",
         'vehicles': vehicles,
@@ -130,7 +178,7 @@ def upload_multi():
             in_path = os.path.join(upload_dir, filename)
             f.save(in_path)
             processed_name, vehicles, classes = process_image(in_path, processed_dir)
-            _update_lane(lane, vehicles, processed_name)
+            _update_lane(lane, vehicles, processed_name, classes)
             results[lane] = {
                 'processed_image': f"/static/processed/{processed_name}",
                 'vehicles': vehicles,
@@ -151,7 +199,7 @@ def upload_multi():
             with open(in_path, 'wb') as fh:
                 fh.write(raw)
             processed_name, vehicles, classes = process_image(in_path, processed_dir)
-            _update_lane(lane, vehicles, processed_name)
+            _update_lane(lane, vehicles, processed_name, classes)
             results[lane] = {
                 'processed_image': f"/static/processed/{processed_name}",
                 'vehicles': vehicles,
