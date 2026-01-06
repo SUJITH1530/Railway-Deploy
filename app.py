@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify, request, redirect
 from traffic_ai import calculate_green_time, DetectorThread, process_image, detect_emergency_vehicles
 from gpio_controller import GPIOController
 import os
@@ -127,7 +127,8 @@ def data():
 
 @app.route('/')
 def home():
-    return render_template('index.html')
+    # Redirect to dashboard since we removed index.html
+    return redirect('/dashboard')
 
 
 @app.route('/dashboard')
